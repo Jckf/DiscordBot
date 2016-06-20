@@ -70,6 +70,7 @@ Bot.prototype = {
 			if (!exists)
 				return;
 
+			delete require.cache[require.resolve(commandFile)];
 			var CommandClass = require(commandFile);
 			var command = new CommandClass(this);
 			command.execute(message, segments);
