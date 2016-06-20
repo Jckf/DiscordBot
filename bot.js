@@ -14,7 +14,9 @@ function Bot() {
 	this.config = require('./config.js');
 
 	// API clients.
-	this.discord = new Discord.Client();
+	this.discord = new Discord.Client({
+		autoReconnect: true
+	});
 	this.twitch = new Twitch({
 		client_id: this.config.tokens.twitch
 	});
