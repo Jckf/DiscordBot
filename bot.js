@@ -115,7 +115,7 @@ Bot.prototype = {
 
 					streamer.isOnline = true;
 				}
-			});
+			}.bind(this));
 		}
 	},
 
