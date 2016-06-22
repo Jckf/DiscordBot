@@ -46,7 +46,7 @@ Bot.prototype = {
 		fs.exists('avatar.png', function (exists) {
 			if (exists)
 				this.discord.setAvatar('data:image/png;base64,' + new Buffer(fs.readFileSync('avatar.png')).toString('base64'));
-		});
+		}.bind(this));
 
 		// Check Twitch every now and then to see if anyone is streaming.
 		setInterval(this.pollTwitch.bind(this), 1000 * this.config.pollInterval);
