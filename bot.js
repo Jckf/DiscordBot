@@ -1,58 +1,59 @@
 #!/usr/bin/env nodejs
 
 // External packages.
-var fs = require('fs');
-var Discord = require('discord.js');
-var Twitch = require('node-twitchtv');
+const fs = require('fs');
+const Discord = require('discord.js');
+const Twitch = require('twitch').default;
 
 // Our packages.
-var Streamer = require('./lib/streamer.js');
-
-// Bot class constructor.
-function Bot() {
-	// Our configuration.
-	this.config = require('./config.js');
-
-	// API clients.
-	this.discord = new Discord.Client({
-		autoReconnect: true
-	});
-	this.twitch = new Twitch({
-		client_id: this.config.tokens.twitch
-	});
-
-	// Connected to Discord and ready to start the party!
-	this.discord.on('ready', this.onReady.bind(this));
-
-	// Someone said something!
-	this.discord.on('message', this.onMessage.bind(this));
-
-	// Streamer instances.
-	this.streamers = {};
-	for (var name in this.config.streamers) {
-		this.streamers[name] = new Streamer(this.twitch, name, this.config.streamers[name]);
-	}
-
-	// We're done configuring the bot. Connect and login :)
-	this.discord.loginWithToken(this.config.tokens.discord);
-}
+const Streamer = require('./lib/streamer.js');
 
 // Bot class prototype.
-Bot.prototype = {
-	constructor: Bot,
+class Bot {
+	constructor(config) {
+		// Our configuration.
+		this.config = config;
 
-	onReady: function () {
+		// API clients.
+		this.discord = new Discord.Client({
+			autoReconnect: true
+		});
+
+		this.twitch = Twitch.withClientCredentials(
+			this.config.tokens.twitch.clientId,
+			this.config.tokens.twitch.clientSecret
+		);
+
+		// Connected to Discord and ready to start the party!
+		this.discord.on('ready', this.onReady.bind(this));
+
+		// Someone said something!
+		this.discord.on('message', this.onMessage.bind(this));
+
+		// We're done configuring the bot. Connect and login :)
+		this.discord.login(this.config.tokens.discord);
+
+		// Streamer instances.
+		this.streamers = {};
+
+		for (const name of Object.keys(this.config.streamers)) {
+			this.streamers[name] = new Streamer(this.twitch, name, this.config.streamers[name]);
+		}
+	}
+
+	onReady() {
 		// Update our avatar if an image is present.
-		fs.exists('avatar.png', function (exists) {
-			if (exists)
+		fs.exists('avatar.png', exists => {
+			if (exists) {
 				this.discord.setAvatar('data:image/png;base64,' + new Buffer(fs.readFileSync('avatar.png')).toString('base64'));
-		}.bind(this));
+			}
+		});
 
 		// Check Twitch every now and then to see if anyone is streaming.
 		setInterval(this.pollTwitch.bind(this), 1000 * this.config.pollInterval);
-	},
+	}
 
-	onMessage: function (message) {
+	onMessage(message) {
 		if (message.isMentioned(this.discord.user)) {
 			// Who is this person anyway? :|
 			this.discord.reply(message, 'you are making me uncomfortable...');
@@ -60,28 +61,30 @@ Bot.prototype = {
 		}
 
 		// Is it a command?
-		if (message.content.substr(0, 1) != '!')
+		if (message.content.substr(0, 1) !== '!') {
 			return;
+		}
 
 		// Split it into bits.
-		var segments = message.content.substr(1).split(' ');
+		let segments = message.content.substr(1).split(' ');
 
 		// Yeah, probably not a good way to do this.
-		var commandFile = './commands/' + segments[0] + '.js';
-		fs.exists(commandFile, function (exists) {
-			if (!exists)
+		let commandFile = './commands/' + segments[0] + '.js';
+		fs.exists(commandFile, exists => {
+			if (!exists) {
 				return;
+			}
 
 			delete require.cache[require.resolve(commandFile)];
-			var CommandClass = require(commandFile);
-			var command = new CommandClass(this);
+			let CommandClass = require(commandFile);
+			let command = new CommandClass(this);
 			command.execute(message, segments);
-		}.bind(this));
-	},
+		});
+	}
 
-	pollTwitch: function () {
-		for (var name in this.streamers) {
-			this.streamers[name].getStream(function (streamer, isOnline, stream) {
+	pollTwitch() {
+		for (const name of Object.keys(this.streamers)) {
+			this.streamers[name].getStream((streamer, isOnline, stream) => {
 				if (!streamer.lastToggle) {
 					// Haven't checked this stream before.
 					streamer.lastToggle = time();
@@ -115,26 +118,23 @@ Bot.prototype = {
 
 					streamer.isOnline = true;
 				}
-			}.bind(this));
-		}
-	},
-
-	replyAndAutoremove: function (message, reply) {
-		// Remove the user's message.
-		this.discord.deleteMessage(message);
-
-		// Send our reply.
-		this.discord.reply(message, reply, {}, function (error, message) {
-			// And finally remove our replace after a little while.
-			this.discord.deleteMessage(message, {
-				wait: 1000 * this.config.autoremoveDelay
 			});
-		}.bind(this));
+		}
 	}
-};
+
+	replyAndAutoremove(message, reply) {
+		// Remove the user's message.
+		message.delete();
+
+		message.reply(reply)
+			.then(sent => {
+				sent.delete(1000 * this.config.autoremoveDelay);
+			});
+	}
+}
 
 // It's magic \o/
-new Bot();
+new Bot(JSON.parse(fs.readFileSync('config.json').toString()));
 
 // UNIX timestamp for lazy bums.
 function time() {

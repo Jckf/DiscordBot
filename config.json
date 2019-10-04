@@ -1,0 +1,22 @@
+{
+	"tokens": {
+		"discord": "hello",
+		"twitch": {
+			"clientId": "foo",
+			"clientSecret": "bar"
+		}
+	},
+	"streamers": {
+		"biinny": "King Biinny in the fucking house, bitch! Live on Twitch! http://twitch.tv/biinny",
+		"torjeagc": "Time for some nut%! Torje just went live on Twitch! http://twitch.tv/torjeagc",
+		"abney317": "Damned bananas! Abney just went live on Twitch! http://twitch.tv/abney317",
+		"flippy_o": "Some say he got his name because he flips people off when passing them. All we know is, he is live on Twitch! http://twitch.tv/flippy_o",
+		"bounceyboy": "Is it a bird? Is it a plane? No, it is Mario... with a water jet pack? Bounceyboy just went live on Twitch! http://twitch.tv/bounceyboy",
+		"stivitybobo": "Eeh uh! Eee oh uh! What is that? You do not speak Banjo? Stivity just went live on Twitch! http://twitch.tv/stivitybobo",
+		"truman": "Time to fly over every level in the game without remorse. Truman is live on Twitch! http://twitch.tv/truman",
+		"xem92": "Daddy's home! http://twitch.tv/xem92",
+		"MrsGizamaluke": "You can't beat me!! Wahahaha! http://twitch.tv/mrsgizamaluke"
+	},
+	"autoremoveDelay": 60,
+	"pollInterval": 60
+}
