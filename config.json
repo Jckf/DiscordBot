@@ -18,5 +18,6 @@
 		"MrsGizamaluke": "You can't beat me!! Wahahaha! http://twitch.tv/mrsgizamaluke"
 	},
 	"autoremoveDelay": 30,
-	"pollInterval": 30
+	"pollInterval": 30,
+	"notificationChannel":  "notifications"
 }
