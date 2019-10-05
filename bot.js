@@ -15,9 +15,7 @@ class Bot {
 		this.config = config;
 
 		// API clients.
-		this.discord = new Discord.Client({
-			autoReconnect: true
-		});
+		this.discord = new Discord.Client();
 
 		this.twitch = Twitch.withClientCredentials(
 			this.config.tokens.twitch.clientId,
@@ -56,7 +54,7 @@ class Bot {
 	onMessage(message) {
 		if (message.isMentioned(this.discord.user)) {
 			// Who is this person anyway? :|
-			this.discord.reply(message, 'you are making me uncomfortable...');
+            message.reply('you are making me uncomfortable...');
 			return;
 		}
 
@@ -83,7 +81,13 @@ class Bot {
 	}
 
 	pollTwitch() {
-		for (const name of Object.keys(this.streamers)) {
+	    let channel = this.discord.channels.find(ch => ch.name === this.config.notificationChannel);
+
+	    if (!channel) {
+	        return;
+        }
+
+        for (const name of Object.keys(this.streamers)) {
 			this.streamers[name].getStream((streamer, isOnline, stream) => {
 				if (!streamer.lastToggle) {
 					// Haven't checked this stream before.
@@ -97,7 +101,7 @@ class Bot {
 
 					if (streamer.isOnline && time() - streamer.lastToggle > 600) {
 						// It was online though, and for more than 10 minutes.
-						this.discord.sendMessage(this.discord.servers[0].channels[0], streamer.name + ' has stopped streaming :(');
+						channel.send(streamer.name + ' has stopped streaming :(');
 						streamer.lastToggle = time();
 					}
 
@@ -110,7 +114,7 @@ class Bot {
 
 						if (streamer.isOnline != null) {
 							// And this is not the first check (ie. stream was not online when the bot started).
-							this.discord.sendMessage(this.discord.servers[0].channels[0], streamer.announcement);
+							channel.send(streamer.announcement);
 						}
 
 						streamer.lastToggle = time();
