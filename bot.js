@@ -43,7 +43,7 @@ class Bot {
         // Update our avatar if an image is present.
         fs.exists('avatar.png', exists => {
             if (exists) {
-                this.discord.setAvatar('data:image/png;base64,' + new Buffer(fs.readFileSync('avatar.png')).toString('base64'));
+                this.discord.user.setAvatar('data:image/png;base64,' + new Buffer(fs.readFileSync('avatar.png')).toString('base64'));
             }
         });
 
