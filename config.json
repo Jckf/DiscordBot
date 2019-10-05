@@ -17,6 +17,6 @@
 		"xem92": "Daddy's home! http://twitch.tv/xem92",
 		"MrsGizamaluke": "You can't beat me!! Wahahaha! http://twitch.tv/mrsgizamaluke"
 	},
-	"autoremoveDelay": 60,
-	"pollInterval": 60
+	"autoremoveDelay": 30,
+	"pollInterval": 30
 }
