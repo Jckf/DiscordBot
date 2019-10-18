@@ -23,10 +23,10 @@ class Bot {
         );
 
         // Connected to Discord and ready to start the party!
-        this.discord.on('ready', this.onReady.bind(this));
+        this.discord.on('ready', () => this.onReady());
 
         // Someone said something!
-        this.discord.on('message', this.onMessage.bind(this));
+        this.discord.on('message', () => this.onMessage());
 
         // We're done configuring the bot. Connect and login :)
         this.discord.login(this.config.tokens.discord);
@@ -48,7 +48,7 @@ class Bot {
         });
 
         // Check Twitch every now and then to see if anyone is streaming.
-        setInterval(this.pollTwitch.bind(this), 1000 * this.config.pollInterval);
+        setInterval(() => this.pollTwitch(), 1000 * this.config.pollInterval);
     }
 
     onMessage(message) {
