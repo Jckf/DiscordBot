@@ -4,8 +4,18 @@ module.exports = class {
     }
 
     execute(message, segments) {
-        if (segments.length < 2 || this.bot.streamers[segments[1]] == null) {
-            this.bot.replyAndAutoremove(message, 'you must specify a team member to check their status. For example: !status biinny');
+        const streamerNames = Object.keys(this.bot.streamers);
+
+        if (!streamerNames.length) {
+            this.bot.replyAndAutoremove(message, 'there aren\'t any streamers in my configuration file :(');
+            return;
+        }
+
+        const singleStreamer = streamerNames.length == 1 ? streamerNames[0] : undefined;
+        const statusFor = (segments.length == 1 ? singleStreamer : segments[1]).toLowerCase();
+
+        if (statusFor == undefined || this.bot.streamers[statusFor] == undefined) {
+            this.bot.replyAndAutoremove(message, 'you must specify a team member to check their status. For example: !status ' + streamerNames[0]);
             return;
         }
 

@@ -35,7 +35,7 @@ class Bot {
         this.streamers = {};
 
         for (const name of Object.keys(this.config.streamers)) {
-            this.streamers[name] = new Streamer(this.twitch, name, this.config.streamers[name]);
+            this.streamers[name.toLowerCase()] = new Streamer(this.twitch, name, this.config.streamers[name]);
         }
     }
 
