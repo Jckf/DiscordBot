@@ -26,7 +26,7 @@ class Bot {
         this.discord.on('ready', () => this.onReady());
 
         // Someone said something!
-        this.discord.on('message', () => this.onMessage());
+        this.discord.on('message', message => this.onMessage(message));
 
         // We're done configuring the bot. Connect and login :)
         this.discord.login(this.config.tokens.discord);
