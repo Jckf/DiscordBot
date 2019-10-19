@@ -17,6 +17,9 @@
 		"xem92": "Daddy's home! http://twitch.tv/xem92",
 		"MrsGizamaluke": "You can't beat me!! Wahahaha! http://twitch.tv/mrsgizamaluke"
 	},
+	"vanityRoles": [
+		"pokego"
+	],
 	"autoremoveDelay": 30,
 	"pollInterval": 30,
 	"notificationChannel":  "notifications"
