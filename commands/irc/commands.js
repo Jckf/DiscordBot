@@ -6,7 +6,7 @@ module.exports = class {
     }
 
     execute(message, segments) {
-        fs.readdir('./commands', (error, files) => {
+        fs.readdir('./commands/irc', (error, files) => {
             let commands = [];
             for (const file of files) {
                 if (file.substr(-3) === '.js') {

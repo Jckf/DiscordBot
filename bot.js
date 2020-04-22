@@ -2,8 +2,10 @@
 
 // External packages.
 const fs = require('fs');
+const moment = require('moment');
 const Discord = require('discord.js');
 const Twitch = require('twitch').default;
+const Irc = require('irc');
 
 // Our packages.
 const Streamer = require('./lib/streamer.js');
@@ -22,11 +24,23 @@ class Bot {
             this.config.tokens.twitch.clientSecret
         );
 
+        if (this.config.tokens.twitch.chatOauth) {
+            // Twitch IRC server will force nickname to the name of the account we're authenticating as. We're just providing a dummy string.
+            this.irc = new Irc.Client('irc.chat.twitch.tv', 'a', {
+                password: this.config.tokens.twitch.chatOauth,
+                channels: Object.keys(this.config.streamers).map(name => '#' + name.toLowerCase())
+            });
+
+            this.irc.addListener('error', console.log);
+
+            this.irc.addListener('message', (from, to, message) => this.onIrcMessage(from, to, message));
+        }
+
         // Connected to Discord and ready to start the party!
         this.discord.on('ready', () => this.onReady());
 
         // Someone said something!
-        this.discord.on('message', message => this.onMessage(message));
+        this.discord.on('message', message => this.onDiscordMessage(message));
 
         // We're done configuring the bot. Connect and login :)
         this.discord.login(this.config.tokens.discord);
@@ -51,7 +65,7 @@ class Bot {
         setInterval(() => this.pollTwitch(), 1000 * this.config.pollInterval);
     }
 
-    onMessage(message) {
+    onDiscordMessage(message) {
         if (message.isMentioned(this.discord.user)) {
             // Who is this person anyway? :|
             message.reply('you are making me uncomfortable...');
@@ -66,17 +80,50 @@ class Bot {
         // Split it into bits.
         let segments = message.content.substr(1).split(' ');
 
+        this.executeCommand('./commands/discord/' + segments[0] + '.js', [
+            message,
+            segments
+        ]);
+    }
+
+    onIrcMessage(from, to, message) {
+        let isPm = to == this.irc.nick;
+
+        if (message.includes(this.irc.nick)) {
+            // Who is this person anyway? :|
+            this.irc.say(from, 'you are making me uncomfortable...');
+            return;
+        }
+
+        // Is it a command?
+        if (message.substr(0, 1) !== '!') {
+            return;
+        }
+
+        // Split it into bits.
+        let segments = message.substr(1).split(' ');
+
+        this.executeCommand('./commands/irc/' + segments[0] + '.js', [
+            isPm,
+            isPm ? from : to,
+            from,
+            to,
+            message,
+            segments
+        ]);
+    }
+
+    executeCommand(path, parameters) {
         // Yeah, probably not a good way to do this.
-        let commandFile = './commands/' + segments[0] + '.js';
-        fs.exists(commandFile, exists => {
+        fs.exists(path, exists => {
             if (!exists) {
                 return;
             }
 
-            delete require.cache[require.resolve(commandFile)];
-            let CommandClass = require(commandFile);
+            delete require.cache[require.resolve(path)];
+            let CommandClass = require(path);
             let command = new CommandClass(this);
-            command.execute(message, segments);
+            command.execute.apply(command, parameters);
         });
     }
 
@@ -91,7 +138,7 @@ class Bot {
             this.streamers[name].getStream((streamer, isOnline, stream) => {
                 if (!streamer.lastToggle) {
                     // Haven't checked this stream before.
-                    streamer.lastToggle = time();
+                    streamer.lastToggle = moment().unix();
                 }
 
                 if (isOnline == null) {
@@ -99,17 +146,17 @@ class Bot {
                 } else if (!isOnline) {
                     // Stream is not online.
 
-                    if (streamer.isOnline && time() - streamer.lastToggle > 600) {
+                    if (streamer.isOnline && moment().unix() - streamer.lastToggle > 600) {
                         // It was online though, and for more than 10 minutes.
                         channel.send(streamer.name + ' has stopped streaming :(');
-                        streamer.lastToggle = time();
+                        streamer.lastToggle = moment().unix();
                     }
 
                     streamer.isOnline = false;
                 } else if (isOnline) {
                     // Stream is online!
 
-                    if (!streamer.isOnline && time() - streamer.lastToggle > 600) {
+                    if (!streamer.isOnline && moment().unix() - streamer.lastToggle > 600) {
                         // And it has been offline for at least 10 minutes.
 
                         if (streamer.isOnline != null) {
@@ -117,7 +164,7 @@ class Bot {
                             channel.send(streamer.announcement);
                         }
 
-                        streamer.lastToggle = time();
+                        streamer.lastToggle = moment().unix();
                     }
 
                     streamer.isOnline = true;
@@ -139,8 +186,3 @@ class Bot {
 
 // It's magic \o/
 new Bot(JSON.parse(fs.readFileSync('config.json').toString()));
-
-// UNIX timestamp for lazy bums.
-function time() {
-    return Math.floor(Date.now() / 1000);
-}

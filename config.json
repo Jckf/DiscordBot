@@ -3,7 +3,8 @@
 		"discord": "hello",
 		"twitch": {
 			"clientId": "foo",
-			"clientSecret": "bar"
+			"clientSecret": "bar",
+			"chatOauth": "oauth:baz"
 		}
 	},
 	"streamers": {
