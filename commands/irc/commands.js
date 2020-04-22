@@ -5,7 +5,7 @@ module.exports = class {
         this.bot = bot;
     }
 
-    execute(message, segments) {
+    execute(isPm, replyTo, from, to, message, segments) {
         fs.readdir('./commands/irc', (error, files) => {
             let commands = [];
             for (const file of files) {
@@ -14,7 +14,7 @@ module.exports = class {
                 }
             }
 
-            this.bot.replyAndAutoremove(message, 'I will repond to the following commands: ' + commands.join(', '));
+            this.bot.irc.say(replyTo, 'I will repond to the following commands: ' + commands.join(', '));
         });
     }
 };
