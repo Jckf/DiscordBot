@@ -4,6 +4,10 @@ module.exports = class {
     }
 
     execute(message, segments) {
+        if (!message.member.hasPermission('KICK_MEMBERS')) {
+            return;
+        }
+
         if (segments.length == 1) {
             this.bot.replyAndAutoremove(message, 'Usage: !forget <phrase> [line number...]');
             return;
