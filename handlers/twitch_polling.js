@@ -48,10 +48,10 @@ module.exports = class {
         this.bot.discord.on('ready', () => this.onReady());
 
         // Streamer instances.
-        this.streamers = {};
+        this.bot.streamers = {};
 
         for (const name of Object.keys(this.bot.config.streamers)) {
-            this.streamers[name.toLowerCase()] = new Streamer(this.bot.twitch, name, this.bot.config.streamers[name]);
+            this.bot.streamers[name.toLowerCase()] = new Streamer(this.bot.twitch, name, this.bot.config.streamers[name]);
         }
     }
 
@@ -67,8 +67,8 @@ module.exports = class {
             return;
         }
 
-        for (const name of Object.keys(this.streamers)) {
-            this.streamers[name].getStream((streamer, isOnline, stream) => {
+        for (const name of Object.keys(this.bot.streamers)) {
+            this.bot.streamers[name].getStream((streamer, isOnline, stream) => {
                 if (!streamer.lastToggle) {
                     // Haven't checked this stream before.
                     streamer.lastToggle = moment().unix();
