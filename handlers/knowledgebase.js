@@ -14,6 +14,8 @@ module.exports = class {
         }
 
         this.loadKb();
+
+        this.bot.kb = this;
     }
 
     onDiscordMessage(message) {
@@ -60,5 +62,33 @@ module.exports = class {
 
     saveKb() {
         fs.writeFileSync('kb.json', JSON.stringify(this.kb));
+    }
+
+    learn(phrase, line) {
+        if (!this.kb.hasOwnProperty(phrase)) {
+            this.kb[phrase] = [];
+        }
+
+        this.kb[phrase].push(line);
+
+        this.saveKb();
+    }
+
+    forget(phrase, lineNumbers) {
+        if (!this.kb.hasOwnProperty(phrase)) {
+            return;
+        }
+
+        if (lineNumbers && lineNumbers.length) {
+            for (const i of lineNumbers) {
+                this.kb[phrase][i - 1] = '';
+            }
+
+            this.kb[phrase] = this.kb[phrase].filter(v => v !== '');
+        } else {
+            delete this.kb[phrase];
+        }
+
+        this.saveKb();
     }
 };
