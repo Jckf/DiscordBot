@@ -14,7 +14,7 @@ module.exports = class {
                 }
             }
 
-            this.bot.irc.say(replyTo, 'I will repond to the following commands: ' + commands.join(', '));
+            this.bot.irc.say(replyTo, 'I will respond to the following commands: ' + commands.join(', '));
         });
     }
 };

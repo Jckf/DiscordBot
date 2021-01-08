@@ -14,7 +14,7 @@ module.exports = class {
                 }
             }
 
-            this.bot.replyAndAutoremove(message, 'I will repond to the following commands: ' + commands.join(', '));
+            this.bot.replyAndAutoremove(message, 'I will respond to the following commands: ' + commands.join(', '));
         });
     }
 };
