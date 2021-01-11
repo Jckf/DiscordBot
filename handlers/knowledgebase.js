@@ -37,7 +37,7 @@ module.exports = class {
             return;
         }
 
-        let phrase = message.substr(1).split(' ').filter(v => v !== '')[0];
+        let phrase = message.toLowerCase().substr(1).split(' ').filter(v => v !== '')[0];
 
         if (!this.kb.hasOwnProperty(phrase)) {
             return;
@@ -65,6 +65,8 @@ module.exports = class {
     }
 
     learn(phrase, line) {
+        phrase = phrase.toLowerCase();
+
         if (!this.kb.hasOwnProperty(phrase)) {
             this.kb[phrase] = [];
         }
@@ -75,6 +77,8 @@ module.exports = class {
     }
 
     forget(phrase, lineNumbers) {
+        phrase = phrase.toLowerCase();
+
         if (!this.kb.hasOwnProperty(phrase)) {
             return;
         }
