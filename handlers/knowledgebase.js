@@ -19,7 +19,7 @@ module.exports = class {
     }
 
     onDiscordMessage(message) {
-        if (message.content.substr(0, 1) !== '?') {
+        if (message.content.substr(0, 1) !== this.bot.config.kb_trigger) {
             return;
         }
 
@@ -33,7 +33,7 @@ module.exports = class {
     }
 
     onIrcMessage(from, to, message) {
-        if (message.substr(0, 1) !== '?') {
+        if (message.substr(0, 1) !== this.bot.config.kb_trigger) {
             return;
         }
 

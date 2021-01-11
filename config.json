@@ -23,5 +23,6 @@
 	],
 	"autoremoveDelay": 30,
 	"pollInterval": 30,
-	"notificationChannel":  "notifications"
+	"notificationChannel":  "notifications",
+	"kb_trigger": "?"
 }
