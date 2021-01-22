@@ -91,7 +91,7 @@ class Bot {
 
         const deferred = Promise.defer();
 
-        this.bot.twitch.unsupported.getChatters(channel)
+        this.twitch.unsupported.getChatters(channel)
             .then(response => {
                 deferred.resolve(response._data.chatters.moderators.includes(user.toLowerCase()));
             })
