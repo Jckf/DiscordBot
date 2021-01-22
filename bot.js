@@ -83,6 +83,22 @@ class Bot {
 
         return new Class(this);
     }
+
+    isMod(channel, user) {
+        if (channel.toLowerCase() == user.toLowerCase()) {
+            return Promise.resolve(true);
+        }
+
+        const deferred = Promise.defer();
+
+        this.bot.twitch.unsupported.getChatters(channel)
+            .then(response => {
+                deferred.resolve(response._data.chatters.moderators.includes(user.toLowerCase()));
+            })
+            .catch(deferred.reject);
+
+        return deferred.promise;
+    }
 }
 
 // It's magic \o/
