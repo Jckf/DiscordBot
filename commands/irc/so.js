@@ -4,18 +4,25 @@ module.exports = class {
         this.channel = null;
         this.stream = null;
         this.replyTo = null;
+        this.streamer = null;
     }
 
     execute(isPm, replyTo, from, to, message, segments) {
-        if (!this.bot.isMod(to.substr(1), from)) {
-            return;
-        }
-
         this.replyTo = replyTo;
+        this.streamer = segments[1];
 
-        let streamer = segments[1];
+        this.bot.isMod(to.substr(1), from)
+            .then(isMod => {
+                if (!isMod) {
+                    return;
+                }
 
-        this.bot.twitch.kraken.users.getUserByName(streamer)
+                this.getData();
+            });
+    }
+
+    getData() {
+        this.bot.twitch.kraken.users.getUserByName(this.streamer)
             .then(user => {
                 this.user = user;
 
