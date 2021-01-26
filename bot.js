@@ -85,6 +85,10 @@ class Bot {
     }
 
     isMod(channel, user) {
+        if (typeof channel != 'string' || typeof user != 'string' || channel === '' || user === '') {
+            return Promise.resolve(false);
+        }
+
         if (channel.toLowerCase() == user.toLowerCase()) {
             return Promise.resolve(true);
         }
