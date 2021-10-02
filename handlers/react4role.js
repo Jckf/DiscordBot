@@ -55,7 +55,7 @@ module.exports = class {
         let role = this.getRole(message, emoji);
 
         if (role) {
-            let member = message.guild.members.find(member => member.user.id === user.id);
+            let member = message.guild.member(user);
             member.removeRole(role);
         }
     }
