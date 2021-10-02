@@ -13,7 +13,9 @@ class Bot {
         this.config = config;
 
         // API clients.
-        this.discord = new Discord.Client();
+        this.discord = new Discord.Client({
+            fetchAllMembers: true
+        });
 
         this.twitch = Twitch.withClientCredentials(
             this.config.tokens.twitch.clientId,

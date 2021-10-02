@@ -24,5 +24,10 @@
 	"autoremoveDelay": 30,
 	"pollInterval": 30,
 	"notificationChannel":  "notifications",
-	"kb_trigger": "?"
+	"kb_trigger": "?",
+	"react4role": {
+		"893940025497108480": {
+			"❤️": "671146056792145933"
+		}
+	}
 }
