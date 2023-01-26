@@ -6,7 +6,7 @@ const Streamer = class {
         this.name = name;
         this.announcement = announcement;
 
-        this.twitch.kraken.users.getUserByName(this.name)
+        this.twitch.helix.users.getUserByName(this.name)
             .then(user => {
                 this.user = user;
             })
